@@ -1,25 +1,25 @@
 pipeline{
     agent any
     stages{
-        stage("code checkout"){
+        stage("Code Checkout"){
             steps{
-                git branch: 'main', credentialsId: 'jenkins', url: 'https://github.com/BalaramThota/doctor.git'
+                git branch: 'main', credentialsId: 'demo', url: 'https://github.com/BalaramThota/doctor.git'
             }
         }
-         stage("Maven Build"){
+        stage("maven Build"){
             steps{
                 sh 'mvn package'
             }
         }
         stage("dev deploy"){
             steps{
-                sshagent(['doctor']) {
-                //copy war file to tomcat server
-                 sh "scp -o StrictHostKeyChecking=no target/doctor.war ec2-user@172.31.28.234:/opt/tomcat9/webapps/"
-                 //Restart tomcat server
-            sh "ssh ec2-user@172.31.28.234 /opt/tomcat9/bin/shutdown.sh"
-            sh "ssh ec2-user@172.31.28.234 /opt/tomcat9/bin/startup.sh"
-                }
+                sshagent(['Tomcat-dev']) {
+           // copy war file from tomcat dev server
+          sh "scp -o StrictHostKeyChecking=no target/doctor.war ec2-user@172.31.15.139:/opt/tomcat9/webapps/"
+          //Restart Tomcatr Server
+          sh "ssh ec2-user@172.31.15.139 /opt/tomcat9/bin/shutdown.sh"
+          sh "ssh ec2-user@172.31.15.139 /opt/tomcat9/bin/startup.sh"
+               }
             }
         }
     }
